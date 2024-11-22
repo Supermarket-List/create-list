@@ -1,0 +1,22 @@
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navItem {
+  list-style: none;
+  margin-right: 15px;
+}
+
+.navLink {
+  text-decoration: none;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .headerContainer {
+    flex-direction: column;
+    text-align: center;
+  }
+}
