@@ -7,7 +7,9 @@ import CriarLista from "./pages/CriarLista";
 
 function App() {
   return (
-    <Router>
+    <Router basename="/app-sepermarket-react">
+      {" "}
+      {/* Altere o basename aqui */}
       <div className="App d-flex flex-column min-vh-100">
         <Header />
         <main className="flex-grow-1 container my-4">
