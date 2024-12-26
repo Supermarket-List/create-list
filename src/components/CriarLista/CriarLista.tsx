@@ -18,6 +18,12 @@ const CriarLista: React.FC = () => {
   const [alertModalShow, setAlertModalShow] = useState<boolean>(true);
   const [modalShow, setModalShow] = useState<boolean>(false);
   const [itemToRemove, setItemToRemove] = useState<number | null>(null);
+  const [responseModal, setResponseModal] = useState({
+    show: false,
+    title: "",
+    body: "",
+    isError: false,
+  });
 
   const capitalizeWords = (str: string): string =>
     str.replace(/\b\w/g, (char) => char.toUpperCase());
@@ -51,6 +57,7 @@ const CriarLista: React.FC = () => {
       setProduto("");
       setValor("");
       setQuantidade("");
+      setSupermercado("");
     }
   };
 
@@ -59,16 +66,66 @@ const CriarLista: React.FC = () => {
       .reduce((total, item) => total + item.valor * item.quantidade, 0)
       .toFixed(2);
 
+  const getBrazilDateTimeISO = (): string => {
+    const brazilDate = new Date().toLocaleString("en-US", {
+      timeZone: "America/Sao_Paulo",
+    });
+    return new Date(brazilDate).toISOString();
+  };
+
   const handleSalvarLista = () => {
+    const userId = localStorage.getItem("userId");
+    const userNome = localStorage.getItem("userNome"); // Recupera o nome
+
+    if (!userId || !userNome) {
+      // Verifica se o nome também está disponível
+      setResponseModal({
+        show: true,
+        title: "Erro",
+        body: "Usuário não autenticado. Faça login novamente.",
+        isError: true,
+      });
+      return;
+    }
+
     const lista = {
-      userId: 123,
-      data: new Date().toISOString(),
+      userId: parseInt(userId, 10),
+      userNome, // Adiciona o nome ao payload
+      data: getBrazilDateTimeISO(),
       itens,
     };
 
-    console.log("Lista salva:", lista);
-    alert("Lista salva com sucesso!");
-    setItens([]);
+    fetch("http://127.0.0.1:5000/api/listas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(lista),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error("Erro ao salvar a lista");
+      })
+      .then((data) => {
+        setResponseModal({
+          show: true,
+          title: "Sucesso!",
+          body: `Sua lista foi salva com sucesso. ID da lista: ${data.listaId}`,
+          isError: false,
+        });
+        setItens([]); // Limpa os itens após salvar
+      })
+      .catch((error) => {
+        setResponseModal({
+          show: true,
+          title: "Erro",
+          body: "Houve um problema ao salvar a lista. Tente novamente.",
+          isError: true,
+        });
+        console.error("Erro ao salvar a lista:", error);
+      });
   };
 
   const handleShowModal = (id: number) => {
@@ -189,6 +246,7 @@ const CriarLista: React.FC = () => {
         Salvar Lista
       </Button>
 
+      {/* Modal de confirmação de remoção */}
       <Modal show={modalShow} onHide={() => setModalShow(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Confirmação de Exclusão</Modal.Title>
@@ -200,6 +258,25 @@ const CriarLista: React.FC = () => {
           </Button>
           <Button variant="danger" onClick={handleConfirmarRemocao}>
             Excluir
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Modal de resposta do sistema */}
+      <Modal
+        show={responseModal.show}
+        onHide={() => setResponseModal({ ...responseModal, show: false })}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>{responseModal.title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{responseModal.body}</Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant={responseModal.isError ? "danger" : "success"}
+            onClick={() => setResponseModal({ ...responseModal, show: false })}
+          >
+            Fechar
           </Button>
         </Modal.Footer>
       </Modal>
