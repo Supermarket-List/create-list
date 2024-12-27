@@ -1,4 +1,4 @@
-export const apiBaseUrl = "http://127.0.0.1:5000/";
+export const apiBaseUrl = "http://10.0.0.108:5000/";
 
 interface Item {
   id: number;
@@ -34,17 +34,24 @@ export const obterListasPorUsuario = async (
   return response.json();
 };
 
-// api.ts
-
 export const excluirLista = async (listaId: number): Promise<void> => {
-  const response = await fetch(`${apiBaseUrl}/api/listas/${listaId}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    const response = await fetch(`${apiBaseUrl}/api/listas/${listaId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error("Erro ao excluir a lista.");
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Erro na resposta:", errorData);
+      throw new Error(errorData.error || "Erro ao excluir a lista.");
+    }
+
+    console.log(`Lista ${listaId} excluída com sucesso!`);
+  } catch (err) {
+    console.error("Erro ao excluir a lista:", err);
+    throw err; // Repassa o erro para o handler do front-end
   }
 };

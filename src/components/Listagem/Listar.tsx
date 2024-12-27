@@ -51,10 +51,16 @@ const Listar: React.FC = () => {
     const handleExcluir = async (listaId: number) => {
         try {
             await excluirLista(listaId); // Chama a função para excluir a lista
-            setListas(listas.filter((lista) => lista.id !== listaId)); // Atualiza a lista de listas após exclusão
+            setListas((prevListas) => prevListas.filter((lista) => lista.id !== listaId));
         } catch (err) {
             setError("Erro ao excluir a lista.");
+            console.error("Erro ao excluir a lista:", err);
         }
+    };
+
+    const calcularTotalLista = (itens: Item[]): string => {
+        const total = itens.reduce((acc, item) => acc + item.valor * item.quantidade, 0);
+        return `R$ ${total.toFixed(2).replace(".", ",")}`;
     };
 
     if (loading) {
@@ -75,28 +81,26 @@ const Listar: React.FC = () => {
                     {listas.map((lista) => (
                         <li
                             key={lista.id}
-                            className="list-group-item d-flex justify-content-between align-items-center"
+                            className="list-group-item d-flex justify-content-between align-items-start flex-column"
                         >
-                            <div>
+                            <div className="d-flex justify-content-between align-items-center">
                                 <h2>{`Lista de ${lista.userNome} - ${new Date(lista.data).toLocaleDateString()}`}</h2>
-                                <ul>
-                                    {lista.itens.map((item) => (
-                                        <li
-                                            key={item.id}
-                                            className="list-group-item d-flex justify-content-between align-items-center"
-                                        >
-                                            {item.produto} - R$ {item.valor.toFixed(2).replace(".", ",")} -{" "}
-                                            {item.quantidade} unidades - (Supermercado) {item.supermercado}
-                                            <span
-                                                onClick={() => handleExcluir(lista.id)} // Passa a lista.id para a função
-                                                style={{ cursor: "pointer", color: "red" }}
-                                            >
-                                                🗑️
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
+                                <span
+                                    onClick={() => handleExcluir(lista.id)}
+                                    style={{ cursor: "pointer", color: "red" }}
+                                >
+                                    🗑️
+                                </span>
                             </div>
+                            <p><strong>Total da Lista:</strong> {calcularTotalLista(lista.itens)}</p>
+                            <ul>
+                                {lista.itens.map((item) => (
+                                    <li key={item.id}>
+                                        {item.produto} - R$ {item.valor.toFixed(2).replace(".", ",")} -{" "}
+                                        {item.quantidade} unidades - (Supermercado) {item.supermercado}
+                                    </li>
+                                ))}
+                            </ul>
                         </li>
                     ))}
                 </ul>

@@ -25,8 +25,12 @@ const CriarLista: React.FC = () => {
     isError: false,
   });
 
+  // Ajuste da função para lidar com caracteres acentuados
   const capitalizeWords = (str: string): string =>
-    str.replace(/\b\w/g, (char) => char.toUpperCase());
+    str
+      .toLowerCase() // Converte tudo para minúsculas primeiro
+      .replace(/(?:^|\s)\S/g, (match) => match.toUpperCase()); // Capitaliza a primeira letra de cada palavra, incluindo acentuadas
+
 
   const handleSupermercadoChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setSupermercado(capitalizeWords(e.target.value));
@@ -57,7 +61,7 @@ const CriarLista: React.FC = () => {
       setProduto("");
       setValor("");
       setQuantidade("");
-      setSupermercado("");
+      // Supermercado permanece intacto
     }
   };
 
@@ -75,10 +79,9 @@ const CriarLista: React.FC = () => {
 
   const handleSalvarLista = () => {
     const userId = localStorage.getItem("userId");
-    const userNome = localStorage.getItem("userNome"); // Recupera o nome
+    const userNome = localStorage.getItem("userNome");
 
     if (!userId || !userNome) {
-      // Verifica se o nome também está disponível
       setResponseModal({
         show: true,
         title: "Erro",
@@ -90,7 +93,7 @@ const CriarLista: React.FC = () => {
 
     const lista = {
       userId: parseInt(userId, 10),
-      userNome, // Adiciona o nome ao payload
+      userNome,
       data: getBrazilDateTimeISO(),
       itens,
     };
@@ -115,7 +118,7 @@ const CriarLista: React.FC = () => {
           body: `Sua lista foi salva com sucesso. ID da lista: ${data.listaId}`,
           isError: false,
         });
-        setItens([]); // Limpa os itens após salvar
+        setItens([]);
       })
       .catch((error) => {
         setResponseModal({
@@ -246,7 +249,6 @@ const CriarLista: React.FC = () => {
         Salvar Lista
       </Button>
 
-      {/* Modal de confirmação de remoção */}
       <Modal show={modalShow} onHide={() => setModalShow(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Confirmação de Exclusão</Modal.Title>
@@ -262,7 +264,6 @@ const CriarLista: React.FC = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Modal de resposta do sistema */}
       <Modal
         show={responseModal.show}
         onHide={() => setResponseModal({ ...responseModal, show: false })}

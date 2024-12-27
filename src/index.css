@@ -31,3 +31,10 @@ form {
     text-align: center;
   }
 }
+
+@media (max-width: 768px) {
+  /* Alvo: Dispositivos com largura menor que 768px */
+  .list-group.w-75 {
+    width: 100% !important;
+  }
+}
