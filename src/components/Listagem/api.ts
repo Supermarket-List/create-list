@@ -1,4 +1,4 @@
-export const apiBaseUrl = "http://10.0.0.108:5000";
+export const apiBaseUrl = "https://supermarketapp25.pythonanywhere.com";
 
 interface Item {
   id: number;

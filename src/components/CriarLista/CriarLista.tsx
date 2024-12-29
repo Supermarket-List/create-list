@@ -98,7 +98,7 @@ const CriarLista: React.FC = () => {
       itens,
     };
 
-    fetch("http://10.0.0.108:5000/api/listas", {
+    fetch("https://supermarketapp25.pythonanywhere.com/api/listas", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

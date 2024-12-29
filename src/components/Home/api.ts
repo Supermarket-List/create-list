@@ -1,5 +1,5 @@
 // api.ts
-export const apiBaseUrl = "http://10.0.0.108:5000/api";
+export const apiBaseUrl = "https://supermarketapp25.pythonanywhere.com/api";
 
 // Função para cadastrar um usuário
 export const cadastrarUsuario = async (
