@@ -98,7 +98,7 @@ const CriarLista: React.FC = () => {
       itens,
     };
 
-    fetch("http://127.0.0.1:5000/api/listas", {
+    fetch("http://10.0.0.108:5000/api/listas", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

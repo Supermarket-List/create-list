@@ -1,4 +1,4 @@
-export const apiBaseUrl = "http://10.0.0.108:5000/";
+export const apiBaseUrl = "http://10.0.0.108:5000";
 
 interface Item {
   id: number;
@@ -53,5 +53,31 @@ export const excluirLista = async (listaId: number): Promise<void> => {
   } catch (err) {
     console.error("Erro ao excluir a lista:", err);
     throw err; // Repassa o erro para o handler do front-end
+  }
+};
+
+export const autenticarUsuario = async (nome: string, telefone: string) => {
+  try {
+    const response = await fetch(`${apiBaseUrl}/api/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ nome, telefone }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Erro no login.");
+    }
+
+    return response;
+  } catch (error: unknown) {
+    // Verificando se o erro é uma instância de Error
+    if (error instanceof Error) {
+      throw new Error(error.message || "Erro na autenticação.");
+    } else {
+      throw new Error("Erro desconhecido durante a autenticação.");
+    }
   }
 };
