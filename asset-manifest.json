@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/app-sepermarket-react/static/css/main.a3050dac.css",
-    "main.js": "/app-sepermarket-react/static/js/main.daf0db4c.js",
+    "main.css": "/app-sepermarket-react/static/css/main.dd419790.css",
+    "main.js": "/app-sepermarket-react/static/js/main.4b14340f.js",
     "static/js/453.db0ada92.chunk.js": "/app-sepermarket-react/static/js/453.db0ada92.chunk.js",
     "static/media/shopping-cart.png": "/app-sepermarket-react/static/media/shopping-cart.e925d86f2877aa948266.png",
     "index.html": "/app-sepermarket-react/index.html",
-    "main.a3050dac.css.map": "/app-sepermarket-react/static/css/main.a3050dac.css.map",
-    "main.daf0db4c.js.map": "/app-sepermarket-react/static/js/main.daf0db4c.js.map",
+    "main.dd419790.css.map": "/app-sepermarket-react/static/css/main.dd419790.css.map",
+    "main.4b14340f.js.map": "/app-sepermarket-react/static/js/main.4b14340f.js.map",
     "453.db0ada92.chunk.js.map": "/app-sepermarket-react/static/js/453.db0ada92.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.a3050dac.css",
-    "static/js/main.daf0db4c.js"
+    "static/css/main.dd419790.css",
+    "static/js/main.4b14340f.js"
   ]
 }
