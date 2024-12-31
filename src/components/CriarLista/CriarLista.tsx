@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Modal, Button } from "react-bootstrap";
+import { UserContext } from "../Context/UserContext";
 
 interface Item {
   id: number;
@@ -10,6 +11,7 @@ interface Item {
 }
 
 const CriarLista: React.FC = () => {
+  const { user } = useContext(UserContext);
   const [produto, setProduto] = useState<string>("");
   const [valor, setValor] = useState<string>("");
   const [quantidade, setQuantidade] = useState<string>("");
@@ -25,12 +27,11 @@ const CriarLista: React.FC = () => {
     isError: false,
   });
 
-  // Ajuste da função para lidar com caracteres acentuados
+  // Função para capitalizar palavras, incluindo caracteres acentuados
   const capitalizeWords = (str: string): string =>
     str
-      .toLowerCase() // Converte tudo para minúsculas primeiro
-      .replace(/(?:^|\s)\S/g, (match) => match.toUpperCase()); // Capitaliza a primeira letra de cada palavra, incluindo acentuadas
-
+      .toLowerCase()
+      .replace(/(?:^|\s)\S/g, (match) => match.toUpperCase());
 
   const handleSupermercadoChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setSupermercado(capitalizeWords(e.target.value));
@@ -47,9 +48,7 @@ const CriarLista: React.FC = () => {
 
   const handleAdicionarItem = () => {
     if (produto && valor && quantidade && supermercado) {
-      const numericValue = parseFloat(
-        valor.replace("R$ ", "").replace(",", ".")
-      );
+      const numericValue = parseFloat(valor.replace("R$ ", "").replace(",", "."));
       const novoItem: Item = {
         id: Date.now(),
         produto,
@@ -61,7 +60,6 @@ const CriarLista: React.FC = () => {
       setProduto("");
       setValor("");
       setQuantidade("");
-      // Supermercado permanece intacto
     }
   };
 
@@ -78,10 +76,7 @@ const CriarLista: React.FC = () => {
   };
 
   const handleSalvarLista = () => {
-    const userId = localStorage.getItem("userId");
-    const userNome = localStorage.getItem("userNome");
-
-    if (!userId || !userNome) {
+    if (!user) {
       setResponseModal({
         show: true,
         title: "Erro",
@@ -92,13 +87,15 @@ const CriarLista: React.FC = () => {
     }
 
     const lista = {
-      userId: parseInt(userId, 10),
-      userNome,
       data: getBrazilDateTimeISO(),
       itens,
     };
 
-    fetch("https://supermarketapp25.pythonanywhere.com/api/listas", {
+    const userId = user.id;
+
+    console.log("Dados enviados ao backend:", lista);
+
+    fetch(`https://supermarketapp25.pythonanywhere.com/api/listas?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -106,10 +103,10 @@ const CriarLista: React.FC = () => {
       body: JSON.stringify(lista),
     })
       .then((response) => {
-        if (response.ok) {
-          return response.json();
+        if (!response.ok) {
+          throw new Error(`Erro ao salvar a lista: ${response.statusText}`);
         }
-        throw new Error("Erro ao salvar a lista");
+        return response.json();
       })
       .then((data) => {
         setResponseModal({
@@ -130,6 +127,7 @@ const CriarLista: React.FC = () => {
         console.error("Erro ao salvar a lista:", error);
       });
   };
+
 
   const handleShowModal = (id: number) => {
     setItemToRemove(id);
@@ -229,7 +227,7 @@ const CriarLista: React.FC = () => {
             key={item.id}
             className="list-group-item d-flex justify-content-between align-items-center"
           >
-            {item.produto} - R$ {item.valor.toFixed(2).replace(".", ",")} -{" "}
+            {item.produto} - R$ {item.valor.toFixed(2).replace(".", ",")} - {" "}
             {item.quantidade} unidades - (Supermercado) {item.supermercado}
             <span
               onClick={() => handleShowModal(item.id)}
@@ -284,5 +282,5 @@ const CriarLista: React.FC = () => {
     </div>
   );
 };
-/* update */
+
 export default CriarLista;

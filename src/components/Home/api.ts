@@ -1,13 +1,12 @@
 // api.ts
-export const apiBaseUrl = "https://supermarketapp25.pythonanywhere.com/api";
-
+export const apiBaseUrl = "https://supermarketapp25.pythonanywhere.com/";
 // Função para cadastrar um usuário
 export const cadastrarUsuario = async (
   nome: string,
   telefone: string,
   email: string
 ) => {
-  const response = await fetch(`${apiBaseUrl}/users`, {
+  const response = await fetch(`${apiBaseUrl}api/users`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -19,7 +18,7 @@ export const cadastrarUsuario = async (
 
 // Função para autenticar um usuário
 export const autenticarUsuario = async (nome: string, telefone: string) => {
-  const response = await fetch(`${apiBaseUrl}/login`, {
+  const response = await fetch(`${apiBaseUrl}api/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

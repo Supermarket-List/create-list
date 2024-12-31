@@ -78,7 +78,7 @@ const Listar: React.FC = () => {
     };
 
     const handleCriarLista = () => {
-        navigate("/criar-lista"); // Redireciona para o componente "Criar Lista"
+        navigate("/CriarLista"); // Redireciona para o componente "Criar Lista"
     };
 
     const handleCloseModal = () => {
