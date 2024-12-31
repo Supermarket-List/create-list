@@ -1,6 +1,8 @@
 import React, { useState, useContext } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { UserContext } from "../Context/UserContext";
+import axios from "axios";
+
 
 interface Item {
   id: number;
@@ -68,12 +70,7 @@ const CriarLista: React.FC = () => {
       .reduce((total, item) => total + item.valor * item.quantidade, 0)
       .toFixed(2);
 
-  const getBrazilDateTimeISO = (): string => {
-    const brazilDate = new Date().toLocaleString("en-US", {
-      timeZone: "America/Sao_Paulo",
-    });
-    return new Date(brazilDate).toISOString();
-  };
+
 
   const handleSalvarLista = () => {
     if (!user) {
@@ -86,8 +83,13 @@ const CriarLista: React.FC = () => {
       return;
     }
 
+    // Ajustando a data para o fuso horário de Brasília (UTC-3)
+    const brasilDate = new Date();
+    brasilDate.setHours(brasilDate.getHours() - 3);  // Ajusta para UTC-3 (horário de Brasília)
+
+    // Formatando para ISO 8601 sem milissegundos
     const lista = {
-      data: getBrazilDateTimeISO(),
+      data: brasilDate.toISOString().split('.')[0] + "Z",  // Removendo milissegundos
       itens,
     };
 
@@ -95,38 +97,39 @@ const CriarLista: React.FC = () => {
 
     console.log("Dados enviados ao backend:", lista);
 
-    fetch(`https://supermarketapp25.pythonanywhere.com/api/listas?userId=${userId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(lista),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Erro ao salvar a lista: ${response.statusText}`);
-        }
-        return response.json();
+    axios
+      .post(`https://supermarketapp25.pythonanywhere.com/api/listas?userId=${userId}`, lista, {
+        headers: {
+          "Content-Type": "application/json",
+        },
       })
-      .then((data) => {
+      .then((response) => {
         setResponseModal({
           show: true,
           title: "Sucesso!",
-          body: `Sua lista foi salva com sucesso. ID da lista: ${data.listaId}`,
+          body: `Sua lista foi salva com sucesso. ID da lista: ${response.data.listaId}`,
           isError: false,
         });
         setItens([]);
       })
       .catch((error) => {
+        if (error.response) {
+          console.error("Erro no backend:", error.response.data);  // Corpo da resposta de erro
+          console.error("Status:", error.response.status);  // Status da resposta
+          console.error("Headers:", error.response.headers);  // Cabeçalhos da resposta
+        } else {
+          console.error("Erro no request:", error.message);
+        }
+
         setResponseModal({
           show: true,
           title: "Erro",
           body: "Houve um problema ao salvar a lista. Tente novamente.",
           isError: true,
         });
-        console.error("Erro ao salvar a lista:", error);
       });
   };
+
 
 
   const handleShowModal = (id: number) => {
